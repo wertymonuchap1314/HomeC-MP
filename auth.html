@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HomeC - Login</title>
+  <meta charset="UTF-8">
+
+  <!-- Firebase Easy Version -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9Wtvvo1idJB2lXCfwBckgk2hrDbSXOfI",
+      authDomain: "homec-e6227.firebaseapp.com",
+      databaseURL: "https://homec-e6227-default-rtdb.firebaseio.com",
+      projectId: "homec-e6227",
+      storageBucket: "homec-e6227.firebasestorage.app",
+      messagingSenderId: "55229004317",
+      appId: "1:55229004317:web:9495e508539d364f68e4f4",
+      measurementId: "G-GZG6QRLTXL"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+</head>
+
+<body>
+
+<h2>HomeC</h2>
+
+<h3>Register</h3>
+<input type="text" id="regUser" placeholder="Username"><br><br>
+<input type="password" id="regPass" placeholder="Password"><br><br>
+<button onclick="register()">Register</button>
+
+<hr>
+
+<h3>Login</h3>
+<input type="text" id="logUser" placeholder="Username"><br><br>
+<input type="password" id="logPass" placeholder="Password"><br><br>
+<button onclick="login()">Login</button>
+
+<script>
+
+function register() {
+  let username = document.getElementById("regUser").value;
+  let password = document.getElementById("regPass").value;
+
+  if(username === "" || password === ""){
+    alert("Fill all fields");
+    return;
+  }
+
+  db.ref("users/" + username).get().then(snapshot => {
+
+    if(snapshot.exists()){
+      alert("Username already exists");
+      return;
+    }
+
+    db.ref("users/" + username).set({
+      password: password
+    });
+
+    alert("Account created! You can login now.");
+  });
+}
+
+function login(){
+  let username = document.getElementById("logUser").value;
+  let password = document.getElementById("logPass").value;
+
+  db.ref("users/" + username).get().then(snapshot => {
+
+    if(!snapshot.exists()){
+      alert("User not found");
+      return;
+    }
+
+    if(snapshot.val().password !== password){
+      alert("Wrong password");
+      return;
+    }
+
+    localStorage.setItem("loggedInUser", username);
+    window.location.href = "index.html";
+  });
+}
+
+</script>
+
+</body>
+</html>
