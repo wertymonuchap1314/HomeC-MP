@@ -1,93 +1,123 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>HomeC - Login</title>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
+<title>HomeC</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#007bff">
 
-  <!-- Firebase Easy Version -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9Wtvvo1idJB2lXCfwBckgk2hrDbSXOfI",
-      authDomain: "homec-e6227.firebaseapp.com",
-      databaseURL: "https://homec-e6227-default-rtdb.firebaseio.com",
-      projectId: "homec-e6227",
-      storageBucket: "homec-e6227.firebasestorage.app",
-      messagingSenderId: "55229004317",
-      appId: "1:55229004317:web:9495e508539d364f68e4f4",
-      measurementId: "G-GZG6QRLTXL"
-    };
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA9Wtvvo1idJB2lXCfwBckgk2hrDbSXOfI",
+  authDomain: "homec-e6227.firebaseapp.com",
+  databaseURL: "https://homec-e6227-default-rtdb.firebaseio.com",
+  projectId: "homec-e6227",
+  storageBucket: "homec-e6227.firebasestorage.app",
+  messagingSenderId: "55229004317",
+  appId: "1:55229004317:web:9495e508539d364f68e4f4"
+};
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-  </script>
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  background:#f5f7fa;
+}
+
+.card{
+  background:white;
+  padding:30px;
+  width:90%;
+  max-width:350px;
+  border-radius:15px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background:#007bff;
+  color:white;
+  font-weight:bold;
+}
+</style>
 </head>
 
 <body>
 
+<div class="card">
 <h2>HomeC</h2>
 
-<h3>Register</h3>
-<input type="text" id="regUser" placeholder="Username"><br><br>
-<input type="password" id="regPass" placeholder="Password"><br><br>
+<h4>Register</h4>
+<input id="regUser" placeholder="Username">
+<input id="regPass" type="password" placeholder="Password">
 <button onclick="register()">Register</button>
 
 <hr>
 
-<h3>Login</h3>
-<input type="text" id="logUser" placeholder="Username"><br><br>
-<input type="password" id="logPass" placeholder="Password"><br><br>
+<h4>Login</h4>
+<input id="logUser" placeholder="Username">
+<input id="logPass" type="password" placeholder="Password">
 <button onclick="login()">Login</button>
+</div>
 
 <script>
+function register(){
+let u=regUser.value;
+let p=regPass.value;
+if(!u||!p){alert("Fill all fields");return;}
 
-function register() {
-  let username = document.getElementById("regUser").value;
-  let password = document.getElementById("regPass").value;
-
-  if(username === "" || password === ""){
-    alert("Fill all fields");
-    return;
-  }
-
-  db.ref("users/" + username).get().then(snapshot => {
-
-    if(snapshot.exists()){
-      alert("Username already exists");
-      return;
-    }
-
-    db.ref("users/" + username).set({
-      password: password
-    });
-
-    alert("Account created! You can login now.");
-  });
+db.ref("users/"+u).get().then(s=>{
+if(s.exists()){alert("Username exists");return;}
+db.ref("users/"+u).set({password:p});
+alert("Account created!");
+});
 }
 
 function login(){
-  let username = document.getElementById("logUser").value;
-  let password = document.getElementById("logPass").value;
+let u=logUser.value;
+let p=logPass.value;
 
-  db.ref("users/" + username).get().then(snapshot => {
-
-    if(!snapshot.exists()){
-      alert("User not found");
-      return;
-    }
-
-    if(snapshot.val().password !== password){
-      alert("Wrong password");
-      return;
-    }
-
-    localStorage.setItem("loggedInUser", username);
-    window.location.href = "index.html";
-  });
+db.ref("users/"+u).get().then(s=>{
+if(!s.exists()||s.val().password!==p){
+alert("Invalid login");return;
+}
+localStorage.setItem("loggedInUser",u);
+location.href="index.html";
+});
 }
 
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("service-worker.js");
+}
 </script>
 
 </body>
